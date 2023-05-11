@@ -3,6 +3,7 @@ import csv
 from datetime import datetime, timedelta
 import time
 import json
+import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
@@ -184,7 +185,10 @@ def showFiles():
         clear_terminal()
         logo()
         print(f"Hai selezionato: {selected_file}")
-        return selected_file
+        time.sleep(3)
+        data = pd.read_csv(selected_file)
+        for i in data:
+            print(i)
             
     else:
         clear_terminal()
@@ -197,23 +201,21 @@ def showFiles():
     
 
 def showGraphic():
-    
-    showFiles()
-    
-    
-    
+    file = showFiles()
+    data = pd.read_csv(file)
+    print("OK!")
     
     
         
 
 def main():
-    startup()
+    #startup()
     term = input()
     match term: 
         case "1": 
             signViews()
         case "2":
-            showGraphic()
+            showFiles()
         case _:
             print("if you cannot understand this menu you are probably a gorillax")
     
