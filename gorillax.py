@@ -67,15 +67,15 @@ def loadingscreen():
     clear_terminal()
     logo()
     print("[", datetime.now().strftime("%H:%M:%S"), "]: waiting to take a snap.")
-    time.sleep(0.3)
+    time.sleep(0.1)
     clear_terminal()
     logo()
     print("[", datetime.now().strftime("%H:%M:%S"), "]: waiting to take a snap..")
-    time.sleep(0.3)
+    time.sleep(0.1)
     clear_terminal()
     logo()
     print("[", datetime.now().strftime("%H:%M:%S"), "]: waiting to take a snap...")
-    time.sleep(0.3)
+    time.sleep(0.1)
 
 
 def obtainPathCsv(channel_name):
@@ -147,11 +147,10 @@ def signViews():
             countdown(3600)
             
             
-        if now.minute % 2 == 0 and now.second == 0 and viewers > 0:
-            timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-            new_data = (timestamp, viewers)
-
+        if now.minute % 5 == 0 and now.second == 0 and viewers > 0:
             with open(path, 'a', newline='') as csvfile:
+                timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
+                new_data = (timestamp, viewers)
                 writer = csv.writer(csvfile)
                 writer.writerow(new_data)
                 clear_terminal()
@@ -209,7 +208,7 @@ def showGraphic():
         
 
 def main():
-    #startup()
+    startup()
     term = input()
     match term: 
         case "1": 
