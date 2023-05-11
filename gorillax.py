@@ -4,6 +4,38 @@ from datetime import datetime, timedelta
 import time
 import json
 import os
+import matplotlib.pyplot as plt
+
+
+
+def logo():
+    print("                  _ _ _            ")
+    print("  __ _  ___  _ __(_) | | __ ___  __")
+    print(" / _` |/ _ \| '__| | | |/ _` \ \/ /")
+    print("| (_| | (_) | |  | | | | (_| |>  < ")
+    print(" \__, |\___/|_|  |_|_|_|\__,_/_/\_\ ")
+    print(" |___/                              ")
+    print(" ")
+        
+def startup():
+    clear_terminal()
+    print("                  _ _ _            ")
+    time.sleep(0.5)
+    print("  __ _  ___  _ __(_) | | __ ___  __")
+    time.sleep(0.5)
+    print(" / _` |/ _ \| '__| | | |/ _` \ \/ /")
+    time.sleep(0.5)
+    print("| (_| | (_) | |  | | | | (_| |>  < ")
+    time.sleep(0.5)
+    print(" \__, |\___/|_|  |_|_|_|\__,_/_/\_\ ")
+    time.sleep(0.5)
+    print(" |___/                              ")
+    time.sleep(0.5)
+    print(" ")
+    time.sleep(2)
+    print("1. Save in a csv timestamp-viewers of a streamer;")
+    print("2. View statistics of a streamer (graphic viewers)")
+    print("3. Try to insert in a regression line one csv")
 
 def get_channel_viewers(client_id, token, channel_name):
     url = f"https://api.twitch.tv/helix/streams?user_login={channel_name}"
@@ -45,7 +77,7 @@ def loadingscreen():
     time.sleep(0.3)
 
 
-def obtainPath(channel_name):
+def obtainPathCsv(channel_name):
     # Ottieni il percorso assoluto della cartella corrente
     cartella_corrente = os.path.dirname(os.path.abspath(__file__))
 
@@ -61,6 +93,18 @@ def obtainPath(channel_name):
     
     return str(percorso_file_csv)
 
+def obtainPath():
+    # Ottieni il percorso assoluto della cartella corrente
+    cartella_corrente = os.path.dirname(os.path.abspath(__file__))
+
+    # Crea il percorso completo per la cartella csv
+    percorso_csv = os.path.join(cartella_corrente, 'csv')
+        
+    if not os.path.exists(percorso_csv):
+        os.makedirs(percorso_csv)
+    
+    return str(percorso_csv)
+
 def countdown(seconds):
     while seconds > 0:
         clear_terminal()
@@ -70,10 +114,7 @@ def countdown(seconds):
         seconds -= 1
     print("Countdown complete!")
 
-    
-
 def signViews():
-    
     clear_terminal()
     logo()
     # Esempio di utilizzo
@@ -82,7 +123,7 @@ def signViews():
     with open('config.json') as f:
         config = json.load(f)
     token = config['api_token'] 
-    path = obtainPath(channel_name)
+    path = obtainPathCsv(channel_name)
     clear_terminal()
     logo()
     print("Opening " + path + ".")
@@ -119,38 +160,52 @@ def signViews():
         else:
             loadingscreen()
 
-def logo():
-    print("                  _ _ _            ")
-    print("  __ _  ___  _ __(_) | | __ ___  __")
-    print(" / _` |/ _ \| '__| | | |/ _` \ \/ /")
-    print("| (_| | (_) | |  | | | | (_| |>  < ")
-    print(" \__, |\___/|_|  |_|_|_|\__,_/_/\_\ ")
-    print(" |___/                              ")
-    print(" ")
-        
-def startup():
+def showFiles():
+    
     clear_terminal()
-    print("                  _ _ _            ")
-    time.sleep(0.5)
-    print("  __ _  ___  _ __(_) | | __ ___  __")
-    time.sleep(0.5)
-    print(" / _` |/ _ \| '__| | | |/ _` \ \/ /")
-    time.sleep(0.5)
-    print("| (_| | (_) | |  | | | | (_| |>  < ")
-    time.sleep(0.5)
-    print(" \__, |\___/|_|  |_|_|_|\__,_/_/\_\ ")
-    time.sleep(0.5)
-    print(" |___/                              ")
-    time.sleep(0.5)
-    print(" ")
-    time.sleep(2)
-    print("1. Save in a csv timestamp-viewers of a streamer;")
-    print("2. View statistics of a streamer (graphic viewers)")
-    print("3. Try to insert in a regression line one csv")
+    logo()
+    
+    current_path = os.getcwd()
+
+   # Ottieni la lista dei file CSV nella cartella corrente
+    csv_files = [file for file in os.listdir(current_path + "/csv") if file.endswith('.csv')]
+
+    # Mostra la lista dei file CSV disponibili
+    print("File CSV disponibili:")
+    for i, file in enumerate(csv_files):
+        print(f"{i + 1}. {file}")
+
+    # Fai selezionare un numero di file all'utente
+    selection = input("Seleziona un numero di file: ")
+
+    # Verifica la selezione dell'utente
+    if selection.isdigit() and int(selection) <= len(csv_files):
+        selected_file = csv_files[int(selection) - 1]
+        clear_terminal()
+        logo()
+        print(f"Hai selezionato: {selected_file}")
+        return selected_file
+            
+    else:
+        clear_terminal()
+        logo()
+        print("Selezione non valida.")
+        main()
+        time.sleep(3)
+        
+    
+    
 
 def showGraphic():
-    print("not implemented yet...")
     
+    showFiles()
+    
+    
+    
+    
+    
+        
+
 def main():
     startup()
     term = input()
