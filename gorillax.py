@@ -5,11 +5,13 @@ import time
 import json
 import pandas as pd
 import os
+import sys
 import matplotlib.pyplot as plt
 
 
 
 def logo():
+    clear_terminal
     print("                  _ _ _            ")
     print("  __ _  ___  _ __(_) | | __ ___  __")
     print(" / _` |/ _ \| '__| | | |/ _` \ \/ /")
@@ -37,6 +39,22 @@ def startup():
     print("1. Save in a csv timestamp-viewers of a streamer;")
     print("2. View statistics of a streamer (graphic viewers)")
     print("3. Try to insert in a regression line one csv")
+
+def get_key():
+    if os.name == 'nt':  # Windows
+        import msvcrt
+        key = msvcrt.getch()
+    else:  # Unix-based systems (Linux, macOS)
+        import tty
+        import termios
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            key = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+    return key
 
 def get_channel_viewers(client_id, token, channel_name):
     url = f"https://api.twitch.tv/helix/streams?user_login={channel_name}"
@@ -164,7 +182,7 @@ def showFiles():
     
     clear_terminal()
     logo()
-    
+
     current_path = os.getcwd()
 
    # Ottieni la lista dei file CSV nella cartella corrente
@@ -178,37 +196,41 @@ def showFiles():
     # Fai selezionare un numero di file all'utente
     selection = input("Seleziona un numero di file: ")
 
+
     # Verifica la selezione dell'utente
     if selection.isdigit() and int(selection) <= len(csv_files):
         selected_file = csv_files[int(selection) - 1]
         clear_terminal()
         logo()
         print(f"Hai selezionato: {selected_file}")
-        time.sleep(3)
-        data = pd.read_csv(selected_file)
-        for i in data:
-            print(i)
-            
+        time.sleep(1)
+        
+        path = current_path + f"/csv/{selected_file}"
+        print(path)
+        
+        df = pd.read_csv(path)
+        print(df)
+        
+        x = df['X'].astype(datetime)
+        y = df['Y'].astype(int)
+        
+        plt.plot(x, y)
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.title(f'Grafico {selected_file}')
+        plt.show()
+        
     else:
         clear_terminal()
         logo()
-        print("Selezione non valida.")
+        print("item selected not valid, press a key to back in the menu.")
+        get_key()
         main()
         time.sleep(3)
-        
     
-    
-
-def showGraphic():
-    file = showFiles()
-    data = pd.read_csv(file)
-    print("OK!")
-    
-    
-        
-
 def main():
     startup()
+    #logo()
     term = input()
     match term: 
         case "1": 
@@ -217,11 +239,9 @@ def main():
             showFiles()
         case _:
             print("if you cannot understand this menu you are probably a gorillax")
-    
         
 if __name__ == "__main__":
     try:
         main()
-        clear_terminal()
     except KeyboardInterrupt:
         print("You typed CTRL + C, which is the keyboard interrupt exception")
