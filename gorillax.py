@@ -288,8 +288,27 @@ def showFiles():
         get_key()
         main()
         time.sleep(3)
-    
+
+def create_config_file(api_key):
+    config = {
+        "api_key": api_key
+    }
+    with open("config.json", "w") as f:
+        json.dump(config, f)
+    print("Il file 'config.json' è stato creato con successo.")
+
+def get_api_key():
+    return input("Inserisci la tua chiave API: ")
+
+def check_config_file():
+    if not os.path.exists("config.json"):
+        api_key = get_api_key()
+        create_config_file(api_key)
+    else:
+        print("Il file 'config.json' esiste già.")
+
 def main():
+    check_config_file()
     startup()
     #logo()
     term = input("Insert a value: ")
@@ -301,7 +320,6 @@ def main():
         case _:
             print("if you cannot understand this menu you are probably a gorillax")
 
-        
 if __name__ == "__main__":
     try:
         main()
