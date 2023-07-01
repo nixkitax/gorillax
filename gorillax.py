@@ -19,26 +19,27 @@ def logo():
     print(" \__, |\___/|_|  |_|_|_|\__,_/_/\_\ ")
     print(" |___/                              ")
     print(" ")
+
         
 def startup():
     clear_terminal()
     print("                  _ _ _            ")
-    time.sleep(0.5)
+    time.sleep(0.2)
     print("  __ _  ___  _ __(_) | | __ ___  __")
-    time.sleep(0.5)
+    time.sleep(0.2)
     print(" / _` |/ _ \| '__| | | |/ _` \ \/ /")
-    time.sleep(0.5)
+    time.sleep(0.2)
     print("| (_| | (_) | |  | | | | (_| |>  < ")
-    time.sleep(0.5)
+    time.sleep(0.2)
     print(" \__, |\___/|_|  |_|_|_|\__,_/_/\_\ ")
-    time.sleep(0.5)
+    time.sleep(0.2)
     print(" |___/                              ")
-    time.sleep(0.5)
+    time.sleep(0.2)
     print(" ")
-    time.sleep(2)
+    time.sleep(0.2)
     print("1. Save in a csv timestamp-viewers of a streamer;")
     print("2. View statistics of a streamer (graphic viewers)")
-    print("3. Try to insert in a regression line one csv")
+
 
 def get_key():
     if os.name == 'nt':  # Windows
@@ -81,17 +82,20 @@ def clear_terminal():
     elif os.name == 'nt':  # For    Windows
         os.system('cls')
 
-def loadingscreen():
+def loadingscreen(channel_name, path):
     clear_terminal()
     logo()
+    printStatus(channel_name, path)
     print("[", datetime.now().strftime("%H:%M:%S"), "]: waiting to take a snap.")
     time.sleep(0.1)
     clear_terminal()
     logo()
+    printStatus(channel_name, path)
     print("[", datetime.now().strftime("%H:%M:%S"), "]: waiting to take a snap..")
     time.sleep(0.1)
     clear_terminal()
     logo()
+    printStatus(channel_name, path)
     print("[", datetime.now().strftime("%H:%M:%S"), "]: waiting to take a snap...")
     time.sleep(0.1)
 
@@ -140,10 +144,40 @@ def get_last_id_from_csv(filename):
         for row in reader:
             last_row = row
         if last_row is not None:
-            last_id = int(last_row[0])  # Assumendo che l'ID sia nella prima colonna
+            last_id = int(last_row[0])+1  # Assumendo che l'ID sia nella prima colonna
             return last_id
         else:
             return 1
+        
+def get_last_timestamp_from_csv(filename):
+    with open(filename, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        last_row = None
+        for row in reader:
+            last_row = row
+        if last_row is not None:
+            last_id = last_row[1]  # Assumendo che l'ID sia nella prima colonna
+            return last_id
+        else:
+            return "NaN "
+def get_last_numViewers_from_csv(filename):
+    with open(filename, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        last_row = None
+        for row in reader:
+            last_row = row
+        if last_row is not None:
+            last_id = last_row[2]  # Assumendo che l'ID sia nella prima colonna
+            return last_id
+        else:
+            return "NaN"
+
+def printStatus(channel_name, path):
+    print("---------------------------------\n")
+    print("Last timestamp taken status of ",channel_name,":\n- ID:        ", get_last_id_from_csv(path), "\n- Timestamp: ", get_last_timestamp_from_csv(path),
+              "\n- Viewers:   ", get_last_numViewers_from_csv(path), "\n")
+    print("---------------------------------\n")
+
 
 def signViews():
     clear_terminal()
@@ -157,36 +191,39 @@ def signViews():
     path = obtainPathCsv(channel_name)
     clear_terminal()
     logo()
-    print("Opening " + path + ".")
-    time.sleep(1)
+    print("- Opening " + path + ".")
+    time.sleep(0.5)
     clear_terminal()
     logo()
-    print("Opening " + path + "..")
-    time.sleep(1)
+    print("- Opening " + path + "..")
+    time.sleep(0.5)
     clear_terminal()
     logo()
-    print("Opening " + path + "...")
-    time.sleep(1)
+    print("- Opening " + path + "...")
+    time.sleep(0.5)
     
     if not os.path.exists(path):
         with open(path, 'w') as file:
             # Puoi anche scrivere del contenuto predefinito nel file se necessario
             pass
-        cnt = get_last_id_from_csv(path)       
-    else: 
         cnt = get_last_id_from_csv(path)   
+        print("- new CSV created..")
+        time.sleep(0.5)
+
+    else: 
+        cnt = get_last_id_from_csv(path)  
+        print("- opening indicated CSV..") 
+        time.sleep(0.5)
+
 
     while True:
         now = datetime.now()
         viewers = get_channel_viewers(client_id, token, channel_name)
-        
         if viewers == 0:
+            printStatus(channel_name, path)
             print(channel_name, " could be offline.. :()")
             countdown(3600)
-        
-            
-            
-        if now.second % 10 == 0 and viewers > 0:
+        if now.minute % 10 == 0 and now.second == 0 and viewers > 0:
             with open(path, 'a', newline='') as csvfile:
                 timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
                 new_data = (cnt, timestamp, viewers)
@@ -195,11 +232,12 @@ def signViews():
                 writer.writerow(new_data)
                 clear_terminal()
                 logo()
+                printStatus(channel_name, path)
                 print("Printed in csv:", new_data, "-", channel_name)
                 time.sleep(5)
                 
         else:
-            loadingscreen()
+            loadingscreen(channel_name, path)
 
 def showFiles():
     
@@ -254,7 +292,7 @@ def showFiles():
 def main():
     startup()
     #logo()
-    term = input()
+    term = input("Insert a value: ")
     match term: 
         case "1": 
             signViews()
@@ -262,6 +300,7 @@ def main():
             showFiles()
         case _:
             print("if you cannot understand this menu you are probably a gorillax")
+
         
 if __name__ == "__main__":
     try:
