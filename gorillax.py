@@ -184,7 +184,7 @@ def signViews():
     logo()
     # Esempio di utilizzo
     client_id = "0t9es7292m951nq659ahaz80yv2qsc"
-    channel_name = input("Inserisci uno streamer che ti piace de: ")
+    channel_name = input("Insert streamer's nickname: ")
     with open('config.json') as f:
         config = json.load(f)
     token = config['api_token'] 
@@ -295,18 +295,16 @@ def create_config_file(api_key):
     }
     with open("config.json", "w") as f:
         json.dump(config, f)
-    print("Il file 'config.json' è stato creato con successo.")
+    print("- 'config.json' created.")
 
 def get_api_key():
-    return input("Inserisci la tua chiave API: ")
+    return input("Insert your API Token twitch: ")
 
 def check_config_file():
     if not os.path.exists("config.json"):
         api_key = get_api_key()
         create_config_file(api_key)
-    else:
-        print("Il file 'config.json' esiste già.")
-
+        
 def main():
     check_config_file()
     startup()
