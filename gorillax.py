@@ -132,6 +132,18 @@ def countdown(seconds):
         time.sleep(1)  # Pause for 1 second
         seconds -= 1
     print("Countdown complete!")
+    
+def get_last_id_from_csv(filename):
+    with open(filename, 'r') as csvfile:
+        reader = csv.reader(csvfile)
+        last_row = None
+        for row in reader:
+            last_row = row
+        if last_row is not None:
+            last_id = int(last_row[0])  # Assumendo che l'ID sia nella prima colonna
+            return last_id
+        else:
+            return 1
 
 def signViews():
     clear_terminal()
@@ -155,6 +167,14 @@ def signViews():
     logo()
     print("Opening " + path + "...")
     time.sleep(1)
+    
+    if not os.path.exists(path):
+        with open(path, 'w') as file:
+            # Puoi anche scrivere del contenuto predefinito nel file se necessario
+            pass
+        cnt = get_last_id_from_csv(path)       
+    else: 
+        cnt = get_last_id_from_csv(path)   
 
     while True:
         now = datetime.now()
@@ -163,18 +183,21 @@ def signViews():
         if viewers == 0:
             print(channel_name, " could be offline.. :()")
             countdown(3600)
+        
             
             
-        if now.minute % 5 == 0 and now.second == 0 and viewers > 0:
+        if now.second % 10 == 0 and viewers > 0:
             with open(path, 'a', newline='') as csvfile:
                 timestamp = now.strftime("%Y-%m-%d %H:%M:%S")
-                new_data = (timestamp, viewers)
+                new_data = (cnt, timestamp, viewers)
+                cnt = cnt + 1 
                 writer = csv.writer(csvfile)
                 writer.writerow(new_data)
                 clear_terminal()
                 logo()
                 print("Printed in csv:", new_data, "-", channel_name)
-                time.sleep(10)
+                time.sleep(5)
+                
         else:
             loadingscreen()
 
