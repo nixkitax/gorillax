@@ -291,7 +291,7 @@ def showFiles():
 
 def create_config_file(api_key):
     config = {
-        "api_key": api_key
+        "api_token": api_key
     }
     with open("config.json", "w") as f:
         json.dump(config, f)
